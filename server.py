@@ -1,5 +1,6 @@
 import socket
 import threading
+import time
 
 HOST = '127.0.0.1'
 PORT = 8080
@@ -59,14 +60,19 @@ def newClient():
     while True:
         client, addr = server.accept()
         client.send("name".encode('utf-8'))
-        nickname = client.recv(1024)
+        nickname = client.recv(1024).decode()
 
         clients.append(client)
-        names.append(nickname.decode())
+        names.append(nickname)
 
-        print(f"{nickname.decode()} has connected to the server")
+        print(f"{nickname} has connected to the server")
         msg = f"LON: {str(names)}".encode()
+        msg2 = f"new user:{nickname}".encode()
         for client in clients:
+            client.send(msg2)
+        time.sleep(1)
+        for client in clients:
+
             client.send(msg)
         thread = threading.Thread(target=rcvMsg, args=(client,))
         thread.start()

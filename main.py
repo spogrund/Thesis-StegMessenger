@@ -3,8 +3,6 @@ import tkinter
 import tkinter.messagebox
 from tkinter import scrolledtext
 from tkinter import *
-import rsa
-import wave
 import socket
 import threading
 from tkinter import simpledialog
@@ -68,9 +66,16 @@ class User:
                     key = (msg[msg.find(":")+4:-1]).encode().decode('unicode_escape').encode("raw_unicode_escape")
                     key = RSA.decrypt(key, self.private_key)
                     self.sym_key_enc_dict[name] = key
+
                 except:
                     pass
-
+            elif "new user:" in msg:
+                name = msg[msg.find(":")+1:]
+                try:
+                    self.sym_key_enc = RSA.encrypt(self.sym_key.decode(), name)
+                    self.s.send(f"{name},{self.name},key: {self.sym_key_enc}".encode())
+                except:
+                    pass
             elif "LON" in msg:
                 self.names = msg[7:-1].replace("'", "")
                 self.names = self.names.split(",")
@@ -122,9 +127,9 @@ class User:
     def name_select(self, *args):
         self.receiver_name = self.namevar.get().strip(" ")
         #self.s.send(f"new receiver,{self.receiver_name}".encode())
-        if self.sent_key == False:
-            self.sym_key_enc = RSA.encrypt(self.sym_key.decode(), self.receiver_name)
-            self.s.send(f"{self.receiver_name},{self.name},key: {self.sym_key_enc}".encode())
+
+        self.sym_key_enc = RSA.encrypt(self.sym_key.decode(), self.receiver_name)
+        self.s.send(f"{self.receiver_name},{self.name},key: {self.sym_key_enc}".encode())
         try:
             names = [self.name, self.receiver_name]
             names.sort()
@@ -134,13 +139,18 @@ class User:
             print("here")
             msg = encryption.decrypt_text(msg.encode(), self.sym_key_enc_dict[self.receiver_name])
             print(msg)
+            msg = msg.rstrip("\n ")
             self.msghist.config(state="normal")
             self.msghist.delete("1.0", END)
-            self.msghist.insert(tkinter.END, f"{msg}")
+            self.msghist.insert(tkinter.END, f"{msg}\n")
             self.msghist.yview(tkinter.END)
             self.msghist.config(state="disabled")
         except:
-            pass
+            self.msghist.config(state="normal")
+            self.msghist.delete("1.0", END)
+            self.msghist.insert(tkinter.END, f"start chatting with {self.receiver_name}\n")
+            self.msghist.yview(tkinter.END)
+            self.msghist.config(state="disabled")
 
 
 if __name__ == '__main__':

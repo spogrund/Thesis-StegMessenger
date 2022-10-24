@@ -1,5 +1,6 @@
 import wave
-
+import string
+import random
 
 def embedTxt(text, file):
     audio = wave.open(file, mode="rb")
@@ -17,7 +18,8 @@ def embedTxt(text, file):
     for i, bit in enumerate(msg_bits):
         embedded_message_array.append((audio_bytes_array[i] & 254) | int(bit))
     embedded_byte_array = bytes(embedded_message_array)
-    filename = file[:-4] + "embedded.wav"
+    filename = ''.join(random.choice(string.ascii_letters) for i in range(10))
+    filename = f"{filename}.wav"
     embedded_audio = wave.open(filename, 'wb')
     embedded_audio.setparams(audio.getparams())
     embedded_audio.writeframes(embedded_byte_array)

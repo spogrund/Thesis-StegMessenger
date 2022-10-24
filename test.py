@@ -8,6 +8,7 @@ if __name__ == "__main__":
     sym_key = encryption.gen_sym_key()
     sym_key_enc = RSA.encrypt(sym_key.decode(), "shp")
     msg_enc = encryption.encrypt_text(msg, sym_key)
+    print(sym_key)
 
 
     sym_key_dec = RSA.decrypt(sym_key_enc, priv_key)

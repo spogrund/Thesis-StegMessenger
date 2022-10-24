@@ -38,17 +38,11 @@ def rcvMsg(client):
             #if "new receiver" in msg:
              #   sendToAll(f"you are now in a chat with: {names[clients.index(client)]}\n".encode(), msg[msg.find(",")+1:])
 
-            if msg[msg.find(": ")+1:] == "q":
-                server.close()
-            elif "LON" in msg:
-                msg = f"LON: {str(names)}".encode()
-                print(msg)
-                client.send(msg)
-            else:
-                receiver_name = msg[:msg.find(',')]
-                #sendToRec(msg.encode(), receiver_name)
-                sendToAll(msg.encode())
-                #client.send(msg[msg.find(",")+1:].encode())
+
+            receiver_name = msg[:msg.find(',')]
+            #sendToRec(msg.encode(), receiver_name)
+            sendToRec(msg.encode(), receiver_name)
+            #client.send(msg[msg.find(",")+1:].encode())
         except:
             print("error: ")
             clients.remove(client)
@@ -59,7 +53,7 @@ def rcvMsg(client):
 def newClient():
     while True:
         client, addr = server.accept()
-        client.send("name".encode('utf-8'))
+        client.send("name".encode())
         nickname = client.recv(1024).decode()
 
         clients.append(client)

@@ -34,15 +34,8 @@ def rcvMsg(client):
             msg = client.recv(1024)
             msg = msg.decode()
             print(msg)
-
-            #if "new receiver" in msg:
-             #   sendToAll(f"you are now in a chat with: {names[clients.index(client)]}\n".encode(), msg[msg.find(",")+1:])
-
-
             receiver_name = msg[:msg.find(',')]
-            #sendToRec(msg.encode(), receiver_name)
             sendToRec(msg.encode(), receiver_name)
-            #client.send(msg[msg.find(",")+1:].encode())
         except:
             print("error: ")
             clients.remove(client)

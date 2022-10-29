@@ -11,6 +11,7 @@ def gen_sym_key():
 def encrypt_text(text, encoded_secret_key):
     secret_key = base64.b64decode(encoded_secret_key)
     cipher = AES.new(secret_key)
+    key_length = len(secret_key)
     msg_padded = text + ((16-len(text))%16 * '$')
     msg_encrypted = cipher.encrypt(msg_padded)
     msg_encrypted_encoded = base64.b64encode(msg_encrypted)

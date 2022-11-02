@@ -5,9 +5,9 @@ useless = 0
 num_cracked = 0
 num_not_cracked = 0
 
-msg = "hello world"
 files = os.listdir('audios')
 
+print("beginning steg file detection test")
 
 for i in range(len(files)):
     com = f"~/AudioStego/build/hideme audios/{files[i]} -f"
@@ -16,5 +16,6 @@ for i in range(len(files)):
         num_not_cracked += 1
     else:
         num_cracked += 1
-print(f"number of files cracked: {num_cracked}")
-print(f"number of files not cracked: {num_not_cracked}")
+print("test complete")
+print(f"number of Steg files: {num_cracked}")
+print(f"number of non steg files: {num_not_cracked}")

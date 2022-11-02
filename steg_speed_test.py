@@ -1,9 +1,12 @@
+import csv
+import pandas as pd
 import steg
 import os
 import string
 import time
 import random
 import wave
+"""
 file0 = wave.open('audios/0.wav', mode="rb")
 file1 = wave.open('audios/1.wav', mode="rb")
 file2 = wave.open('audios/2.wav', mode='rb')
@@ -38,7 +41,7 @@ len6 = len(ba6)
 print(len0, len1, len2, len3, len4, len5, len6)
 encryption_times = []
 dec_times = []
-for i in range(33, 1000):
+for i in range(36, 1000):
     for j in range(20):
         msg = ''.join(random.choice(string.ascii_letters) for m in range(i*5000))
         emb_start = time.time()
@@ -65,4 +68,26 @@ for i in range(33, 1000):
     embfile = open('Average embedding times', 'a')
 
     extfile.write(f"average extraction time of string length {str(i*5000)}: {avg2}s \n")
-    embfile.write(f"average embedding time of string length of {str(i*500)}: {avg}s \n")
+    embfile.write(f"average embedding time of string length of {str(i*5000)}: {avg}s \n")
+"""
+if __name__ == "__main__":
+    string_lengths = []
+
+    times = []
+    times2 = []
+    with open("timing tests/Average embedding times", 'r') as file:
+        for line in file:
+            str_length = line[line.find("length")+10:line.find(":")]
+            string_lengths.append(str_length)
+            time = float(line[line.find(":") + 2:].strip(" \n").strip("s"))
+            times.append(time)
+    file2 = open("timing tests/Average extraction times", 'r')
+    for line in file2:
+        time = float(line[line.find(":") + 2:].strip(" \n").strip("s"))
+        times2.append(time)
+    print(times2)
+    print(string_lengths)
+    dicti = {'length of string': string_lengths, 'avg embedding time': times,'avg decryption time': times2}
+
+    df = pd.DataFrame(dicti)
+    df.to_csv('Steg times.csv')

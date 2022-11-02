@@ -33,8 +33,12 @@ def rcvMsg(client):
         try:
             msg = client.recv(1024)
             msg = msg.decode()
-            print(msg)
+
             receiver_name = msg[:msg.find(',')]
+            sender_name = msg[msg.find(',')+1: msg.find('\'')]
+            msgs = msg[msg.find('\'')+1:]
+            msgs = msgs[msg.find(':')+1:]
+            print(msgs)
             sendToRec(msg.encode(), receiver_name)
         except:
             print("error: ")

@@ -12,6 +12,7 @@ import diffie
 if __name__ == "__main__":
     num_success = 0
     num_failure = 0
+    print("Beginning matching key test")
     for i in range(100):
         p = diffie.get_prime()
         r = random.randint(1,5000)
@@ -27,6 +28,7 @@ if __name__ == "__main__":
             num_success +=1
         else:
             num_failure +=1
+    print("Test complete")
     print(f"NUmber of successes = {num_success}")
     print(f"number of failures = {num_failure}")
 

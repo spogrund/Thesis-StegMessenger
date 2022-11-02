@@ -65,7 +65,7 @@ class User:
                 time.sleep(2)
             rec_msg = self.s.recv(1024).decode()
             self.busy = True
-            print(rec_msg)
+            #print(rec_msg)
             if rec_msg == "name":
                 self.s.send(self.name.encode())
             elif "pub_key:" in rec_msg:
@@ -83,7 +83,7 @@ class User:
                     self.key_dict[their_name] = secretkey
 
                     key_msg2 = f"{their_name},{self.name}'pubkey:{B}"
-                    print(key_msg2)
+                    #print(key_msg2)
                     self.s.send(key_msg2.encode())
 
                 except:
@@ -140,7 +140,7 @@ class User:
                 except:
                     pass
             self.busy = False
-            print(self.key_dict)
+            #print(self.key_dict)
     def send_message(self):
         msg = self.msgbox.get("1.0", tkinter.END)
         self.msgbox.delete("1.0", tkinter.END)

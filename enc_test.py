@@ -1,6 +1,6 @@
 import encryption
 import random
-
+import pandas as pd
 import string
 from math import log
 
@@ -28,16 +28,34 @@ file = open('word_list.txt', 'r')
 wordsList = file.read().split("\n")
 msg = ''
 entropies = []
-
-for j in range(46):
-    for i in range(j*100):
-        msg += wordsList[random.randint(0,len(wordsList))] + ' '
-
+max_entropies = []
+random_entropies1 = []
+lengths = []
+random_entropies2 = []
+for j in range(1, 100):
+    msg = ''
+    for i in range(j*10):
+        msg += wordsList[random.randint(0, len(wordsList)-1)] + ' '
+    lengths.append(len(msg))
+    msg2 = ''.join(chr(random.randint(0, 128)) for m in range(len(msg)))
+    msg3 = ''.join(chr(random.randint(0, 128)) for m in range(len(msg)*100))
     key = encryption.gen_sym_key()
     msg_enc = encryption.encrypt_text(msg, key)
     entropy, max_entropy = shannon(msg_enc.decode())
     entropies.append(entropy)
+    max_entropies.append(max_entropy)
+    rnd_entropy, max_entropy = shannon(msg2)
+    random_entropies1.append(rnd_entropy)
+    rnd_entropy, max_entropy = shannon(msg3)
+    random_entropies2.append(rnd_entropy)
 print(entropies)
-print(max_entropy)
+print(max_entropies)
+print(random_entropies1)
+print(random_entropies2)
+
+dicti = {'length of string': lengths, 'avg entropy': entropies, 'avg entropy of same length': random_entropies1, 'average entropy of lenght x 100': random_entropies2}
+
+df = pd.DataFrame(dicti)
+df.to_csv('entropy.csv')
 
 

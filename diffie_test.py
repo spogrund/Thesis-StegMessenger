@@ -1,14 +1,14 @@
+"""
+PGRSAM001
+EEE4022S
+Final year project
+Key exchange test module
+"""
 import random
-
-import steg
-import RSA
 import encryption
-import matplotlib.pyplot as plt
-import numpy as np
-import wave, sys
-import threading
 import diffie
 
+#generate 100 different keys using random values and check if they match
 if __name__ == "__main__":
     num_success = 0
     num_failure = 0

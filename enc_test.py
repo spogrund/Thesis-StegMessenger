@@ -1,14 +1,18 @@
+"""
+PGRSAM001
+EEE4022S
+Final year project
+Encryption entropy test module
+"""
+
 import encryption
 import random
 import pandas as pd
 import string
 from math import log
 
+#method to calculate the shannon entropy of a text and calculate the maximum possible entropy
 def shannon(string):
-
-
-# if isinstance(string, unicode):
-#   string = string.encode("ascii")
     ent = 0.0
     max_ent = 0.0
     if len(string) < 2:
@@ -32,6 +36,7 @@ max_entropies = []
 random_entropies1 = []
 lengths = []
 random_entropies2 = []
+#generate increasing length of strings to test their entropy.
 for j in range(1, 100):
     msg = ''
     for i in range(j*10):
@@ -52,9 +57,7 @@ print(entropies)
 print(max_entropies)
 print(random_entropies1)
 print(random_entropies2)
-
 dicti = {'length of string': lengths, 'avg entropy': entropies, 'avg entropy of same length': random_entropies1, 'average entropy of lenght x 100': random_entropies2}
-
 df = pd.DataFrame(dicti)
 df.to_csv('entropy.csv')
 

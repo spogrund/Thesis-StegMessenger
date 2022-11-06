@@ -1,3 +1,9 @@
+"""
+PGRSAM001
+EEE4022S
+Final year project
+steg detection test module
+"""
 import steg
 import os
 import subprocess
@@ -9,6 +15,7 @@ files = os.listdir('audios')
 
 print("beginning steg file detection test")
 
+# use AudioStego tool to try and detect a steg file for all files in the audios directory
 for i in range(len(files)):
     com = f"~/AudioStego/build/hideme audios/{files[i]} -f"
     text = subprocess.check_output(com, shell=True)

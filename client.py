@@ -1,3 +1,9 @@
+"""
+PGRSAM001
+EEE4022S
+Final year project
+Client module
+"""
 import random
 import time
 import tkinter
@@ -22,9 +28,9 @@ class User:
     a = 4
     p=1
     r=1
-    sym_key_enc_dict = {}
     busy = False
-    num_of_peopele =0
+    num_of_people =0
+    #when a user is launched, gets name and starts threads for the gui and to listen for messages
     def __init__(self):
         self.win = tkinter.Tk()
         self.win.withdraw()
@@ -38,6 +44,7 @@ class User:
         time.sleep(1)
         self.recv_thread.start()
 
+    #gui thread to create and update the gui as necessary
     def gui(self):
         self.window = tkinter.Tk()
         self.namevar = StringVar(self.window)
@@ -56,19 +63,21 @@ class User:
         self.window.protocol("WM_DELETE_WINDOW", self.closing)
         self.window.mainloop()
 
+    #handles the closing of the gui
     def closing(self):
         self.s.close()
         self.window.destroy()
+
+        #thread to listen for and handle messages coming in from the server
     def listen(self):
         while True:
             if self.busy == True:
                 time.sleep(2)
             rec_msg = self.s.recv(1024).decode()
             self.busy = True
-            #print(rec_msg)
             if rec_msg == "name":
                 self.s.send(self.name.encode())
-            elif "pub_key:" in rec_msg:
+            elif "pub_key:" in rec_msg: # implementation of the key exchange
                 try:
                     my_name = rec_msg[:rec_msg.find(",")]
                     their_name = rec_msg[rec_msg.find(",")+1:rec_msg.find("\'")]
@@ -76,16 +85,11 @@ class User:
                     r = int(rec_msg[rec_msg.find(";")+1:rec_msg.find(".")])
                     A = int(rec_msg[rec_msg.find(".")+1:])
                     b = random.randint(1,50)
-
                     B = diffie.calc_pub_key(p,r,b)
-
                     secretkey = diffie.calc_secret_key(p,A,b)
                     self.key_dict[their_name] = secretkey
-
                     key_msg2 = f"{their_name},{self.name}'pubkey:{B}"
-                    #print(key_msg2)
                     self.s.send(key_msg2.encode())
-
                 except:
                     print("error in receiving key")
             elif "pubkey" in rec_msg:
@@ -104,27 +108,23 @@ class User:
                         self.p = diffie.get_prime()
                         self.r = random.randint(1, 50)
                         self.a = random.randint(1,50)
-                        A = diffie.calc_pub_key(self.p,self.r,self.a)
-                        time.sleep(random.randint(0,self.num_of_peopele))
+                        A = diffie.calc_pub_key(self.p,self.r,self.a)#generation of public key to send to new user
+                        time.sleep(random.randint(0,self.num_of_people))
                         key_msg = f"{name},{self.name}'pub_key:{self.p};{self.r}.{A}"
                         self.s.send(key_msg.encode())
-
                 except:
                     pass
-
             elif "LON" in rec_msg:
                 self.names = rec_msg[7:-1].replace("'", "")
                 self.names = self.names.split(",")
                 menu = self.nameList["menu"]
                 menu.delete(0, "end")
-                self.num_of_peopele = len(self.names)
+                self.num_of_people = len(self.names)
                 #print(self.names)
                 for name in self.names:
                     if name.strip(" ") != self.name:
                         menu.add_command(label=name.strip(" "), command=lambda value=name: self.namevar.set(value))
             else:
-
-
                 try:
                     my_name = rec_msg[:rec_msg.find(',')]
                     their_name = rec_msg[rec_msg.find(',') + 1: rec_msg.find("\'")]
@@ -140,7 +140,7 @@ class User:
                 except:
                     pass
             self.busy = False
-            #print(self.key_dict)
+    #Take message from text box, to encrypt and embed it before sending it to receiver via the server
     def send_message(self):
         msg = self.msgbox.get("1.0", tkinter.END)
         self.msgbox.delete("1.0", tkinter.END)
@@ -154,32 +154,21 @@ class User:
         msg = encryption.encrypt_text(f"{msg}", self.key_dict[self.receiver_name]).decode()
         msg = f"{self.receiver_name},{self.name}\'{msg}"
         self.s.send(msg.encode())
-
         self.msghist.config(state="normal")
         msghist = self.msghist.get("1.0", tkinter.END)
         self.msghist.config(state="disabled")
-
         msghist_enc = encryption.encrypt_text(f"{msghist}", self.key_dict[self.receiver_name]).decode()
         steg.embedTxtHist(msghist_enc, "audios/handel.wav", self.name, self.receiver_name)
 
-    def get_names(self):
-        self.s.send("LON".encode())
-
+    #when selecting new user, check if there is a history to display in chat history box.
     def name_select(self, *args):
         self.receiver_name = self.namevar.get().strip(" ")
-        #self.s.send(f"new receiver,{self.receiver_name}".encode())
-
-        #self.sym_key_enc = RSA.encrypt(self.sym_key.decode(), self.receiver_name)
-        #self.s.send(f"{self.receiver_name},{self.name},key: {self.sym_key_enc}".encode())
         try:
             names = [self.name, self.receiver_name]
             names.sort()
             filename = f"audios/{names[0]},{names[1]}embedded.wav"
-            #print(filename)
             msg = steg.extract(filename)
-            #print("here")
             msg = encryption.decrypt_text(msg.encode(), self.key_dict[self.receiver_name])
-           # print(msg)
             msg = msg.rstrip("\n ")
             self.msghist.config(state="normal")
             self.msghist.delete("1.0", END)
@@ -192,7 +181,7 @@ class User:
             self.msghist.yview(tkinter.END)
             self.msghist.config(state="disabled")
 
-
+#create user on launch of python file
 if __name__ == '__main__':
     u = User()
 

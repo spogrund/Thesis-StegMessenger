@@ -1,7 +1,15 @@
+"""
+PGRSAM001
+EEE4022S
+Final year project
+Steganography module
+"""
 import wave
 import string
 import random
 
+
+#embed text in a given file by converting the audio into a byte array to replace the last bit with the message bit
 def embedTxt(text, file):
     audio = wave.open(file, mode="rb")
     msg = text
@@ -26,22 +34,19 @@ def embedTxt(text, file):
     embedded_audio.close()
     return filename
 
+#method to extract a message from the database given a filename, by using the reverse prcess of the embed text
 def extract(filename):
     audio = wave.open(filename, "rb")
     frames = audio.getnframes()
     audio_bytes = audio.readframes(frames)
     audio_bytes_list = list(audio_bytes)
     audio_bytes_array = bytearray(audio_bytes_list)
-
     bitlist = []
-
     for i in range(len(audio_bytes_array)):
         bitlist.append(audio_bytes_array[i] & 1)
-
     m = []
     for i in range(0, len(bitlist), 8):
         m.append(bitlist[i:i + 8])
-
     message = ''
     m2 = []
     for i in range(len(m)):
@@ -51,7 +56,7 @@ def extract(filename):
 
     return message
 
-
+#same as embed text, but modified to embed a chat history.
 def embedTxtHist(text, file, sender_name, receiver_name):
     audio = wave.open(file, mode="rb")
     names = [sender_name, receiver_name]
